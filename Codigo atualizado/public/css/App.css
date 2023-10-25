@@ -1,0 +1,30 @@
+.header{
+  background-color:#FFCE28;
+}
+.topicos{
+  color: #000;
+  font-family: Roboto;
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin:16px;
+  margin-top: 100px;
+}
+.topico1{
+  color: #000;
+  font-family: Roboto;
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-left: 360px;
+  margin-right: 13px;
+}
+.logo_class{
+  margin: 20px;
+  margin-left: 40px;
+}
+.simbolo_login{
+  margin:35px;
+}

@@ -1,0 +1,19 @@
+<pre id="jsonContainer"></pre>
+
+<script>
+    // Função para buscar dados do banco e atualizar a página
+    async function carregarDadosDoBanco() {
+        try {
+            const resposta = await fetch('/api/postagens'); 
+            const dados = await resposta.json();
+
+            // Exibe o JSON formatado dentro da tag <pre>
+            document.getElementById('jsonContainer').textContent = JSON.stringify(dados, null, 2);
+        } catch (erro) {
+            console.error('Erro ao buscar dados do banco:', erro);
+        }
+    }
+
+    // Chama a função para carregar dados do banco ao carregar a página
+    carregarDadosDoBanco();
+</script>

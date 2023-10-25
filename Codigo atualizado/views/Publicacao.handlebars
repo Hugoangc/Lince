@@ -1,0 +1,36 @@
+<body>
+    <p className="titulo">Publicação de Notícias</p>
+    <hr className="linha"></hr>
+    <div className="card">
+        <form action="/publicado" method="POST" enctype="multipart/form-data" id="formulario">
+            <p className="textForm">Publicador(es):</p>
+            <label for="publicador"></label>
+            <!-- Adicione o atributo name ao campo -->
+            <input className="form1" type="text" id="publicador" name="publicador" />
+            <br></br>
+            <p className="textForm">Título da Notícia:</p>
+            <label for="tituloNot"></label>
+            <!-- Adicione o atributo name ao campo -->
+            <input class="form1" type="text" id="tituloNot" name="tituloNot" />
+            <br></br>
+            <p className="textForm">Data da Publicação:</p>
+            <label for="datapubli"></label>
+            <!-- Adicione o atributo name ao campo -->
+            <input class="form2" type="date" name="datapubli" id="datapubli" />
+            <p class="textForm">Texto da Notícia:</p>
+            <label for="textNoticia"></label>
+            <!-- Adicione o atributo name ao campo -->
+            <textarea className="form3" name="textoNot"></textarea>
+            <br></br>
+            <p className="textForm">Imagem da Notícia:</p>
+            <label for="imgNot"></label>
+            <!-- Adicione o atributo name ao campo -->
+            <input type ="file" name="image" />
+            <br></br>
+            <br></br>
+            <br></br>
+            <button className="botao" type="submit">Publicar Notícia</button>
+            <br></br>
+        </form>
+    </div>
+</body>

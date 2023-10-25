@@ -1,0 +1,58 @@
+.linha{
+    margin: 30px;
+}
+.card{
+    margin: 35px;
+    margin-left: 45px;
+    color:#afafaf;
+}
+.titulo{
+    color: #000;
+    font-family: Roboto;
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin: 30px;
+}
+.textForm{
+    color: #000;
+    font-family: Roboto;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.form1{
+    width: 1250px;
+    height: 30px;
+    border-radius: 0.3125rem;
+    border: 1px solid #000;
+    background: #FFF;
+}
+.form2{
+    border-radius: 0.3125rem;
+    border: 1px solid #000;
+    height: 30px;
+}
+.form3{
+    width: 1250px;
+    height: 23.375rem;
+    border-radius: 0.3125rem;
+    border: 1px solid #000;
+    background: #FFF;
+}
+.botao{
+    border-radius: 0.3125rem;
+    border: 1px solid #000;
+    background: #FFCE28;
+    width: 21.8125rem;
+    height: 2.375rem;
+    color: #000;
+    font-family: Roboto;
+    font-size: 1.25rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-left: 900px;
+}

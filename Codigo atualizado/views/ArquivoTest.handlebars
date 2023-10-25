@@ -1,0 +1,34 @@
+<h1>FORM de upload</h1>
+
+<form method="post" enctype="multipart/form-data" action ="/upload">
+    <input type="file" name="file">
+    <input type="submit" value="upload">
+</form>
+
+
+<h1>Redirecionamento</h1>
+<button onclick="redirecionarParaPublicar()">Ir para Publicar</button>
+
+<script>
+    function redirecionarParaPublicar() {
+        // Redireciona para a página /Postagens
+        window.location.href = "/publicar";
+    }
+</script>
+<button onclick="redirecionarParaPostagens()">Ir para Postagens</button>
+
+<script>
+    function redirecionarParaPostagens() {
+        // Redireciona para a página /Postagens
+        window.location.href = "/postagens";
+    }
+</script>
+
+<button onclick="redirecionarParaTestes()">Ir para Testes</button>
+
+<script>
+    function redirecionarParaTestes() {
+        // Redireciona para a página /Postagens
+        window.location.href = "/BANCOTESTE";
+    }
+</script>
