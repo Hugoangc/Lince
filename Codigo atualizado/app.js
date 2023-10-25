@@ -61,6 +61,9 @@ app.get('/publicar', (req, res) => {
 })
 app.post('/publicado', upload.single("image"), (req, res) => {
     const { publicador, tituloNot, subtitulo, datapubli, textoNot } = req.body;
+    if(!publicador || !tituloNot || !subtitulo || !datapubli || !textoNot){
+        return res.render('Publicacao', { error: "Todos os campos devem ser preenchidos!", publicador, tituloNot, subtitulo, datapubli, textoNot });
+    }
         Post.create({
             publicador,
             tituloNot,
@@ -160,6 +163,16 @@ function formatTexto(texto) {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
 
 router.get('/:id', async (req, res) => {
     const postId = req.params.id;

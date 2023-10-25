@@ -3,15 +3,16 @@
 
 <head>
     <header className='header'>
-        <img className="logo_class" src={logo} />
-        <a className="topico1">PROJETOS</a>
-        <a className="topicos">EVENTOS</a>
+        <img className="logo_class" src='/img/lince_logo.png' />
+        <a className="topico1" href="/projetos">PROJETOS</a>
+        <a className="topicos" href="/participacao-em-eventos">EVENTOS</a>
         <BrowserRouter>
-        <Route component={ Publicar } path="/publicar" />
+        <a class="topicos" href="/publicar">PUBLICAR</a>
         </BrowserRouter>
-        <a className="topicos">CONTATE-NOS</a>
-        <a className="topicos">SOBRE NÓS</a>
-        <img className="simbolo_login" src={login} />
+        <a className="topicos" href="/contato">CONTATE-NOS</a>
+        <a className="topicos" href="/sobre">SOBRE NÓS</a>    
+        <a className="topicos" href="/">VOLTAR</a>
+        <img className="simbolo_login" src='/img/simbolo_login.png' />
     </header>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/App.css">
@@ -24,6 +25,6 @@
 <body>
     {{{body}}}
 </body>
-<img className='foot' src={Rodape}/>
+<img className='lince_foot' src='/img/lince_foot.png' />
 
 </html>
