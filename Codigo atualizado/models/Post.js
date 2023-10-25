@@ -7,6 +7,9 @@ const Post = db.sequelize.define('postagens', {
     tituloNot:{
         type: db.Sequelize.STRING
     },
+    subtitulo:{
+        type: db.Sequelize.STRING
+    },
     datapubli:{
         type: db.Sequelize.DATE
     },

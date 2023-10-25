@@ -1,0 +1,11 @@
+<!-- detalhes_noticia.handlebars -->
+
+<h1>{{post.tituloNot}}</h1>
+<p>{{post.textoNot}}</p>
+<!-- Outros detalhes da notícia... -->
+
+<!-- Lista de Notícias -->
+{{#each posts}}
+    <a href="/noticias/{{id}}">{{tituloNot}}</a>
+    <!-- Outros detalhes da notícia... -->
+{{/each}}

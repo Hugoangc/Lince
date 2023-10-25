@@ -28,3 +28,17 @@
 .simbolo_login{
   margin:35px;
 }
+
+.news-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.news-box {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #f9f9f9;
+  box-sizing: border-box; /* Isso garante que padding e border não afetem a largura total */
+}

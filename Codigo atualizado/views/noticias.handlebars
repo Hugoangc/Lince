@@ -1,0 +1,18 @@
+<h1>Lista de Notícias</h1>
+
+{{#each posts}}
+    {{#if isNewDate}}
+        <h2>{{createdAt}}</h2>
+    {{/if}}
+
+    <div class="news-box">
+        <div>
+            <h2>{{tituloNot}}</h2>
+            <h4>{{subtitulo}}</h4>
+            <h5>{{publicador}}</h5>
+            <p>{{textoNot}}</p>
+            <small>{{createdAt}}</small>
+            <hr>
+        </div>
+    </div>
+{{/each}}

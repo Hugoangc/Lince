@@ -9,6 +9,8 @@ const Banco = require('./models/Banco')
 const session = require("express-session")
 const flash = require("connect-flash")
 const multer = require("multer") //lidar com uploads de arquivos
+const router = express.Router();
+
 
 //Public
 
@@ -58,15 +60,15 @@ app.get('/publicar', (req, res) => {
     res.render('Publicacao')
 })
 app.post('/publicado', upload.single("image"), (req, res) => {
-    const { publicador, tituloNot, datapubli, textoNot } = req.body;
-
+    const { publicador, tituloNot, subtitulo, datapubli, textoNot } = req.body;
         Post.create({
             publicador,
             tituloNot,
+            subtitulo,
             datapubli,
             textoNot
         }).then(() => {
-            res.send("Notícia publicada");
+            res.redirect('/');
         }).catch((erro) => {
             res.send("Houve um erro: " + erro);
         });
@@ -112,6 +114,7 @@ app.get('/postagens', async (req, res) => {
         const dadosFormatados = postagens.map(postagem => ({
             publicador: postagem.publicador,
             titulo: postagem.tituloNot,
+            subtitulo: postagem.subtitulo,
             dataPublicacao: postagem.datapubli,
             texto: postagem.textoNot
         }));
@@ -132,6 +135,7 @@ app.get('/api/postagens', async (req, res) => {
         const dadosFormatados = postagens.map(postagem => ({
             publicador: postagem.publicador,
             titulo: postagem.tituloNot,
+            subtitulo: postagem.subtitulo,
             dataPublicacao: postagem.datapubli ? formatDate(postagem.datapubli) : "N/A",
             texto: postagem.textoNot
         }));
@@ -153,6 +157,70 @@ function formatTexto(texto) {
     // Adiciona uma quebra de linha antes de cada nova linha no texto
     return texto.replace(/\n/g, '\n');
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+router.get('/:id', async (req, res) => {
+    const postId = req.params.id;
+
+    try {
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        // Renderizar a página de detalhes da notícia
+        res.render('news', { post });
+    } catch (error) {
+        console.error('Erro ao buscar notícia:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+
+module.exports = router;
+
+
+app.get('/dnoticias', (req, res)=>{
+    Post.findAll().then(function(posts){
+        res.render('noticias', {posts:posts})
+    })
+})
+app.get('/noticias', (req, res)=>{
+    Post.findAll({order:[['id', 'desc']]}).then(function(posts){
+        const formattedPosts = posts.map(post => {
+            return {
+                createdAt: post.createdAt,
+                tituloNot: post.get('tituloNot'),
+                subtitulo: post.get('subtitulo'),
+                publicador: post.get('publicador'),
+                textoNot: post.get('textoNot')
+            };
+        });
+
+        res.render('noticias', { posts: formattedPosts });
+    });
+});
+app.get('/nnoticias', (req, res) => {
+    Post.findAll({order:[['id', 'desc']]}).then(function (posts) {
+        let lastCreatedAt = null; // Inicializa lastCreatedAt
+
+        // Adiciona lastCreatedAt como uma propriedade a cada post
+        const postsWithDate = posts.map(post => {
+            const postWithDate = {
+                ...post.toJSON(),
+                isNewDate: post.createdAt !== lastCreatedAt
+            };
+
+            lastCreatedAt = post.createdAt; // Atualiza lastCreatedAt
+            return postWithDate;
+        });
+
+        res.render('noticias', { posts: postsWithDate });
+    });
+});
+
 
 
 app.get('/cad', (req, res) => {
