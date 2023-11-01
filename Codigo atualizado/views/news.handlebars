@@ -1,11 +1,24 @@
-<!-- detalhes_noticia.handlebars -->
 
-<h1>{{post.tituloNot}}</h1>
-<p>{{post.textoNot}}</p>
-<!-- Outros detalhes da notícia... -->
+{{#if isNewDate}}
+<h2>{{post.createdAt}}</h2>
+{{/if}}
 
-<!-- Lista de Notícias -->
-{{#each posts}}
-    <a href="/noticias/{{id}}">{{tituloNot}}</a>
-    <!-- Outros detalhes da notícia... -->
-{{/each}}
+<div class="news-box">
+    <div>
+        <h2>{{post.tituloNot}}</h2>
+        <!--<h1>{{post.id}}</h1> -->
+        <h4>{{post.subtitulo}}</h4>
+        <h5>{{post.publicador}}</h5>
+        <p>{{post.textoNot}}</p>
+        <small>{{formatDate post.createdAt}}</small>
+        <hr>
+        <form action="/excluir-noticia/{{post.id}}" method="POST">
+            <input type="hidden" name="postId" value="{{post.id}}">
+            <button type="submit">Excluir Notícia</button>
+        </form>
+        <form action="/atualizar_noticia/{{post.id}}" method="GET">
+            <input type="hidden" name="postId" value="{{post.id}}">
+            <button type="submit">Editar Notícia</button>
+        </form>
+    </div>
+</div>

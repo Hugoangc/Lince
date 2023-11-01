@@ -10,7 +10,8 @@ const session = require("express-session")
 const flash = require("connect-flash")
 const multer = require("multer") //lidar com uploads de arquivos
 const router = express.Router();
-
+const handle = require('handlebars')
+const News = require('./views/news'); // Importe seu modelo Sequelize
 
 //Public
 
@@ -40,6 +41,23 @@ app.use((req, res, next) => {
 })
 
 
+handle.registerHelper('formatDate', function (date) {
+    // Certifique-se de que 'date' é uma instância válida de Date
+    const parsedDate = new Date(date);
+
+    if (isNaN(parsedDate.getTime())) {
+        // Se 'date' não é uma data válida, retorne uma string vazia ou uma mensagem de erro
+        return 'Data inválida';
+    }
+
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(parsedDate.getDate()).padStart(2, '0');
+
+    return `${day}-${month}-${year}`;
+});
+
+
 //Multer - MiddleWare que lida com arquivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -56,58 +74,33 @@ const upload = multer({ storage })
 
 
 //Rotas
+
+///////////////////////  CRUD
+//Publicar
 app.get('/publicar', (req, res) => {
     res.render('Publicacao')
 })
 app.post('/publicado', upload.single("image"), (req, res) => {
     const { publicador, tituloNot, subtitulo, datapubli, textoNot } = req.body;
-    if(!publicador || !tituloNot || !subtitulo || !datapubli || !textoNot){
+    if (!publicador || !tituloNot || !subtitulo || !datapubli || !textoNot) {
         return res.render('Publicacao', { error: "Todos os campos devem ser preenchidos!", publicador, tituloNot, subtitulo, datapubli, textoNot });
     }
-        Post.create({
-            publicador,
-            tituloNot,
-            subtitulo,
-            datapubli,
-            textoNot
-        }).then(() => {
-            res.redirect('/');
-        }).catch((erro) => {
-            res.send("Houve um erro: " + erro);
-        });
-    
-});
-/*
-app.post('/publicado', upload.single("file"), (req, res) => {
-           var erros = []
-            if(!req.body.publicador || typeof req.body.publicador == undefined || req.body.publicador == null){
-                erros.push({texto: "Nome invalido"})
-            }
-            if(!req.body.tituloNot || typeof req.body.tituloNot == undefined || req.body.tituloNot == null){
-                erros.push({texto: "Titulo invalido"})
-            }
-            if(!req.body.textoNot || typeof req.body.textoNot == undefined || req.body.textoNot == null){
-                erros.push({texto: "Texto invalido"})
-            }
-            if(erros.length > 0){
-                res.render("Publicacao", {erros : erros})
-            }//else{
-                
     Post.create({
-        publicador: req.body.publicador,
-        tituloNot: req.body.tituloNot,
-        datapuli: req.body.datapubli,
-        textoNot: req.body.textoNot
+        publicador,
+        tituloNot,
+        subtitulo,
+        datapubli,
+        textoNot
     }).then(() => {
-        res.send("Notícia publicada")
-    }).catch(() => {
-        res.send("Houve um erro" + erro)
-    })
-    //}
-})
-*/
+        res.redirect('/noticias');
+    }).catch((erro) => {
+        res.send("Houve um erro: " + erro);
+    });
 
-//testes
+});
+
+//Leitura
+//json
 app.get('/postagens', async (req, res) => {
     try {
         // Busque todas as postagens do banco de dados
@@ -129,6 +122,7 @@ app.get('/postagens', async (req, res) => {
         res.status(500).json({ error: 'Erro ao buscar postagens' });
     }
 });
+
 app.get('/api/postagens', async (req, res) => {
     try {
         // Busque todas as postagens do banco de dados
@@ -150,6 +144,60 @@ app.get('/api/postagens', async (req, res) => {
         res.status(500).json({ error: 'Erro ao buscar postagens' });
     }
 });
+
+//Noticias
+
+app.get('/noticias', (req, res) => {
+    Post.findAll({ order: [['id', 'desc']] }).then(function (posts) {
+        const formattedPosts = posts.map(post => {
+            return {
+                id: post.id, // Adicione esta linha para incluir o ID
+                createdAt: post.createdAt,
+                tituloNot: post.get('tituloNot'),
+                subtitulo: post.get('subtitulo'),
+                publicador: post.get('publicador'),
+                textoNot: post.get('textoNot')
+            };
+        });
+
+        res.render('noticias', { posts: formattedPosts });
+    });
+});
+
+
+
+
+
+
+
+
+
+//
+//EXCLUIR NOTÍCIA
+app.post('/excluir-noticia/:id', async (req, res) => {
+    const postId = req.body.postId;
+
+    try {
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        // Excluir a notícia
+        await post.destroy();
+
+        // Redirecionar para a página de notícias
+        res.redirect('/noticias');
+    } catch (error) {
+        console.error('Erro ao excluir notícia:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+
+//testes
+
+
 function formatDate(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -165,16 +213,8 @@ function formatTexto(texto) {
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-
-
-
-
-
-
-
-
-router.get('/:id', async (req, res) => {
+/*
+app.get('/:id', async (req, res) => {
     const postId = req.params.id;
 
     try {
@@ -192,31 +232,227 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-module.exports = router;
+*/
 
 
-app.get('/dnoticias', (req, res)=>{
-    Post.findAll().then(function(posts){
-        res.render('noticias', {posts:posts})
-    })
-})
-app.get('/noticias', (req, res)=>{
-    Post.findAll({order:[['id', 'desc']]}).then(function(posts){
-        const formattedPosts = posts.map(post => {
-            return {
-                createdAt: post.createdAt,
-                tituloNot: post.get('tituloNot'),
-                subtitulo: post.get('subtitulo'),
-                publicador: post.get('publicador'),
-                textoNot: post.get('textoNot')
-            };
+//ATUALIZAR NOTÍCIA
+
+app.get('/atualizar_noticia/:id', async (req, res) => {
+    const postId = req.params.id;
+    try {
+        const post = await Post.findByPk(postId);
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+        //res.send('id: ', + req.params.id)
+        res.render('atualizar_noticia', { Post: post }); // Adicione { Post: post }
+    } catch (error) {
+        console.error('Erro ao buscar notícia para atualização:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+/*
+app.post('/editar_noticia/:id', async (req, res) => {
+    const postId = req.params.id;
+
+    try {
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        const { publicador, tituloNot, subtitulo, datapubli, textoNot } = req.body;
+
+        // Atualizar os dados do post existente
+        await post.update({
+            publicador,
+            tituloNot,
+            subtitulo,
+            datapubli,
+            textoNot
         });
 
-        res.render('noticias', { posts: formattedPosts });
+        // Redirecionar para a página de notícias após a atualização
+        res.redirect('/noticias');
+
+    } catch (error) {
+        console.error('Erro ao buscar notícia para atualização:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+/** */
+
+app.post('/atualizar_noticia/:id', async (req, res) => {
+    const postId = req.params.id;
+
+    try {
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        // Obtenha os dados do formulário
+        const { publicador, tituloNot, subtitulo, datapubli, textoNot } = req.body;
+
+        post.publicador = req.body.publicador,
+        post.tituloNot = req.body.tituloNot,
+        post.subtitulo = req.body.subtitulo,
+        post.datapubli = req.body.datapubli,
+        post.textoNot = req.body.textoNot
+        await Post.save(); 
+    
+        res.redirect('/noticias');
+
+    } catch (error) {
+        console.error('Erro ao buscar notícia para atualização:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+
+/*
+app.get('/atualizar_noticia/:id', async (req, res) => {
+    const postId = req.params.id;
+    try {
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+        // Renderizar a página de atualização de notícia
+        res.render('atualizar_noticia')
+    } catch (error) {
+        console.error('Erro ao buscar notícia para atualização:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+
+
+app.put('/atualizar_noticia/:id', upload.single("image"), async (req, res) => {
+    let id = req.params.id;
+    let tituloNot = req.body.tituloNot;
+    let subtitulo = req.body.subtitulo;
+    let publicador = req.body.publicador;
+    let textoNot = req.body.textoNot;
+    
+    // Certifique-se de que a tabela e os campos estejam corretos no seu banco de dados
+    let cmd = 'UPDATE postagens SET tituloNot = ?, subtitulo = ?, publicador = ?, textoNot = ? WHERE id = ?;';
+
+    db.query(cmd, [tituloNot, subtitulo, publicador, textoNot, id], function (erro, resultados) {
+        if (erro) {
+            res.send(erro);
+        }
+        res.redirect(303, '/noticias');
     });
 });
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+app.get('/atualizar_noticia/:id', async (req, res) => {
+    const postId = req.params.id;
+
+    try {
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        // Renderizar a página de edição da notícia
+        res.render('atualizar_noticia', { post });
+    } catch (error) {
+        console.error('Erro ao buscar notícia para edição:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+
+
+
+app.post('/atualizar_noticia/:id', upload.single('image'), async (req, res) => {
+    const postId = req.params.id;
+
+    try {
+        // Encontrar a notícia pelo ID
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        // Atualizar os campos da notícia com base nos dados do formulário
+        post.publicador = req.body.publicador;
+        post.tituloNot = req.body.tituloNot;
+        post.subtitulo = req.body.subtitulo;
+        post.datapubli = req.body.datapubli;
+        post.textoNot = req.body.textoNot;
+
+        // Se um arquivo de imagem for enviado, atualizar o caminho da imagem
+        //if (req.file) {
+           // post.imagePath = req.file.path; // Supondo que o modelo tenha um campo 'imagePath'
+       // }
+
+        // Salvar as alterações no banco de dados
+        await post.save();
+
+        // Redirecionar para a página da notícia atualizada ou fazer qualquer outra coisa que você deseja
+        res.redirect('/noticias');
+
+    } catch (error) {
+        console.error('Erro ao atualizar notícia:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+
+
+
+
+app.post('/atualizddar_noticias/:id', async (req, res) => {
+    const postId = req.params.id;
+    console.log('Rota /atualizarNoticia acionada por POST, ID:', postId);
+    try {
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        // Atualizar os campos com os valores do formulário
+        post.publicador = req.body.publicador;
+        // Atualize outros campos conforme necessário
+
+        // Salvar as alterações
+        await post.save();
+
+        // Redirecionar para a página de notícias
+        res.redirect('/noticias');
+    } catch (error) {
+        console.error('Erro ao atualizar notícia:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+
+*/
+
+
+
+
 app.get('/nnoticias', (req, res) => {
-    Post.findAll({order:[['id', 'desc']]}).then(function (posts) {
+    Post.findAll({ order: [['id', 'desc']] }).then(function (posts) {
         let lastCreatedAt = null; // Inicializa lastCreatedAt
 
         // Adiciona lastCreatedAt como uma propriedade a cada post
@@ -257,19 +493,61 @@ app.post('/upload', upload.single("file"), (req, res) => {
     res.send("Recebido!")
 })
 
-app.get('/BANCOTESTE', (req, res) =>{
+app.get('/BANCOTESTE', (req, res) => {
     res.render('TesteJson')
 })
 
 app.get('/postagem', (req, res) => {
     res.send("Postagens")
 })
+/*
+//app.get('/news/:id', (req, res) =>{
+   // res.render('news')
+//})
+app.get('/news/:id', async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        res.render('news', { post, formatDate }); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao buscar a notícia');
+    }
+});
+*/
+app.get('/news/:id', async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        const formattedPost = {
+            id: post.id,
+            createdAt: post.createdAt,
+            tituloNot: post.get('tituloNot'),
+            subtitulo: post.get('subtitulo'),
+            publicador: post.get('publicador'),
+            textoNot: post.get('textoNot')
+        };
+
+        res.render('news', { post: formattedPost, formatDate }); // Passe os dados da notícia para a página
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao buscar a notícia');
+    }
+});
 
 
 
-
-
-//app.use('admin', admin)
+app.use('admin', admin)
 
 
 

@@ -1,0 +1,35 @@
+{{#if error}}
+<p>{{error}}</p>
+{{/if}}
+
+<body>
+    <p class="titulo">Atualizar Notícia</p>
+    <hr class="linha">
+    </hr>
+    <div class="card">
+        <form action="/atualizar_noticia/{{id}}" method="POST" enctype="multipart/form-data" id="formulario">
+            <!-- Adicione value aos campos para exibir os valores da notícia -->
+            <!--<input type="hidden" name="_method" value="PUT"> -->
+            <input type="hidden" name="postId">
+            <p className="textForm">Publicador(es):</p>
+            <input className="form1" type="text" id="publicador" name="publicador">
+            <br></br>
+            <p className="textForm">Título da Notícia:</p>
+            <input class="form1" type="text" id="tituloNot" name="tituloNot" >
+            <br></br>
+            <p className="textForm">Subtítulo da Notícia:</p>
+            <input class="form1" type="text" id="subtitulo" name="subtitulo">
+            <br></br>
+            <p className="textForm">Data da Publicação:</p>
+            <input class="form2" type="date" name="datapubli" id="datapubli">
+            <p class="textForm">Texto da Notícia:</p>
+            <textarea class="form3" name="textoNot"></textarea>
+            <br></br>
+            <p className="textForm">Imagem da Notícia:</p>
+            <input type="file" name="image" />
+
+            <button type="submit">Atualizar Notícia</button>
+            <br>
+        </form>
+    </div>
+</body>
