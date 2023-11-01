@@ -11,7 +11,6 @@ const flash = require("connect-flash")
 const multer = require("multer") //lidar com uploads de arquivos
 const router = express.Router();
 const handle = require('handlebars')
-const News = require('./views/news'); // Importe seu modelo Sequelize
 
 //Public
 
@@ -535,10 +534,11 @@ app.get('/news/:id', async (req, res) => {
             tituloNot: post.get('tituloNot'),
             subtitulo: post.get('subtitulo'),
             publicador: post.get('publicador'),
-            textoNot: post.get('textoNot')
+            textoNot: post.get('textoNot'),
+            datapubli: post.get('datapubli')
         };
 
-        res.render('news', { post: formattedPost, formatDate }); // Passe os dados da notícia para a página
+        res.render('news', { post: formattedPost, formatDate }); 
     } catch (error) {
         console.error(error);
         res.status(500).send('Erro ao buscar a notícia');

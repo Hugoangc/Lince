@@ -10,7 +10,8 @@
         <h4>{{post.subtitulo}}</h4>
         <h5>{{post.publicador}}</h5>
         <p>{{post.textoNot}}</p>
-        <small>{{formatDate post.createdAt}}</small>
+        <h6>Data da notícia:{{formatDate post.datapubli}}</h6>
+        <small>Publicado em {{formatDate post.createdAt}}</small>
         <hr>
         <form action="/excluir-noticia/{{post.id}}" method="POST">
             <input type="hidden" name="postId" value="{{post.id}}">
