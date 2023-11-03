@@ -1,35 +1,29 @@
 <h1>Lista de Notícias</h1>
 
 {{#each posts}}
-  {{#if isNewDate}}
-    <h2>{{createdAt}}</h2>
-  {{/if}}
+{{#if isNewDate}}
+<h2>{{createdAt}}</h2>
+{{/if}}
 
-  <div class="news-card">
+<div class="news-box">
     <div>
-      <h2><a href="/news/{{id}}">{{tituloNot}}</a></h2>
-      <h4>{{subtitulo}}</h4>
-      <h5>{{publicador}}</h5>
+        <h2><a href="/news/{{id}}">{{tituloNot}}</a></h2>
+        <h4>{{subtitulo}}</h4>
+        <h5>{{publicador}}</h5>
 
-      <!-- Use triple curly braces para renderizar HTML não escapado -->
-      {{#if showFullText}}
+        <!-- Use triple curly braces para renderizar HTML não escapado -->
         <p>{{{textoNot}}}</p>
-      {{else}}
-        <!-- Limita o texto a 300 caracteres -->
-        <p>{{{textoNot.slice 0 300}}}</p>
-        <button class="read-more-button" data-post-id="{{id}}">Leia mais</button>
-      {{/if}}
 
-      <small>Atualizado em {{formatDate post.createdAt}}</small>
-      <hr>
-      <form action="/excluir-noticia/{{id}}" method="POST">
-        <input type="hidden" name="postId" value="{{id}}">
-        <button type="submit">Excluir Notícia</button>
-      </form>
-      <form action="/atualizar_noticia/{{id}}" method="GET">
-        <input type="hidden" name="postId" value="{{id}}">
-        <button type="submit">Editar Notícia</button>
-      </form>
+        <small>Atualizado em {{formatDate post.createdAt}}</small>
+        <hr>
+        <form action="/excluir-noticia/{{id}}" method="POST">
+            <input type="hidden" name="postId" value="{{id}}">
+            <button type="submit">Excluir Notícia</button>
+        </form>
+        <form action="/atualizar_noticia/{{id}}" method="GET">
+            <input type="hidden" name="postId" value="{{id}}">
+            <button type="submit">Editar Notícia</button>
+        </form>
     </div>
-  </div>
+</div>
 {{/each}}
