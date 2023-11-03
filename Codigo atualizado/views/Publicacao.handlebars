@@ -1,4 +1,84 @@
 {{#if error}}
+<p>{{error}}</p>
+{{/if}}
+
+<body>
+    <p class="titulo">Publicação de Notícias</p>
+    <hr class="linha">
+    </hr>
+    <div class="card">
+        <form action="/publicado" method="POST" enctype="multipart/form-data" id="formulario">
+            <p class="textForm">Publicador(es):</p>
+            <input class="form1" type="text" id="publicador" name="publicador" />
+            <br>
+
+            <p class="textForm">Título da Notícia:</p>
+            <input class="form1" type="text" id="tituloNot" name="tituloNot" />
+            <br>
+
+            <p class="textForm">Subtítulo da Notícia:</p>
+            <input class="form1" type="text" id="subtitulo" name="subtitulo" />
+            <br>
+
+            <p class="textForm">Data da Publicação:</p>
+            <input class="form2" type="date" name="datapubli" id="datapubli" />
+
+            <p class="textForm">Texto da Notícia:</p>
+            <textarea class="form3" name="textoNot"></textarea>
+
+            <br>
+
+            <p class="textForm">Imagem da Notícia:</p>
+            <input type="file" name="image" />
+            <br>
+            <br>
+
+            <button class="botao" type="submit">Publicar Notícia</button>
+            <br>
+        </form>
+    </div>
+
+    <!-- Adicione o script do TinyMCE -->
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+        // Inicialize o TinyMCE
+        tinymce.init({
+            selector: 'textarea',  // Seletor para os campos de texto
+            plugins: 'lists link image',
+            toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image',
+            menubar: false
+        });
+    </script>
+</body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--{{#if error}}
   <p>{{error}}</p>
 {{/if}}
 <body>
@@ -8,31 +88,25 @@
         <form action="/publicado" method="POST" enctype="multipart/form-data" id="formulario">
             <p className="textForm">Publicador(es):</p>
             <label for="publicador"></label>
-            <!-- Adicione o atributo name ao campo -->
             <input className="form1" type="text" id="publicador" name="publicador"/>
             <br></br>
             <p className="textForm">Título da Notícia:</p>
             <label for="tituloNot"></label>
-            <!-- Adicione o atributo name ao campo -->
             <input class="form1" type="text" id="tituloNot" name="tituloNot" />
             <br></br>
             <p className="textForm">Subtítulo da Notícia:</p>
             <label for="subtitulo"></label>
-            <!-- Adicione o atributo name ao campo -->
             <input class="form1" type="text" id="subtitulo" name="subtitulo" />
             <br></br>
             <p className="textForm">Data da Publicação:</p>
             <label for="datapubli"></label>
-            <!-- Adicione o atributo name ao campo -->
             <input class="form2" type="date" name="datapubli" id="datapubli" />
             <p class="textForm">Texto da Notícia:</p>
             <label for="textNoticia"></label>
-            <!-- Adicione o atributo name ao campo -->
             <textarea className="form3" name="textoNot"></textarea>
             <br></br>
             <p className="textForm">Imagem da Notícia:</p>
             <label for="imgNot"></label>
-            <!-- Adicione o atributo name ao campo -->
             <input type ="file" name="image" />
             <br></br>
             <br></br>
@@ -40,4 +114,4 @@
             <br></br>
         </form>
     </div>
-</body>
+</body>-->

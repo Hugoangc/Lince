@@ -7,28 +7,28 @@
     <hr class="linha">
     </hr>
     <div class="card">
-        <form action="/atualizar_noticia/{{id}}" method="POST" enctype="multipart/form-data" id="formulario">
-            <!-- Adicione value aos campos para exibir os valores da notícia -->
-            <!--<input type="hidden" name="_method" value="PUT"> -->
-            <input type="hidden" name="postId">
+        <!--<h1>{{post.id}}</h1>-->
+        <form action="/atualizar_noticia/{{post.id}}" method="POST" enctype="multipart/form-data" id="formulario">
+            <!--<input type="hidden" name="id" value="{{post.id}}">-->
             <p className="textForm">Publicador(es):</p>
-            <input className="form1" type="text" id="publicador" name="publicador">
+            <label for="publicador"></label>
+            <input className="form1" type="text" id="publicador" name="publicador" value="{{post.publicador}}" />
             <br></br>
             <p className="textForm">Título da Notícia:</p>
-            <input class="form1" type="text" id="tituloNot" name="tituloNot" >
+            <input class="form1" type="text" id="tituloNot" name="tituloNot" value="{{post.tituloNot}}">
             <br></br>
             <p className="textForm">Subtítulo da Notícia:</p>
-            <input class="form1" type="text" id="subtitulo" name="subtitulo">
+            <input class="form1" type="text" id="subtitulo" name="subtitulo" value="{{post.subtitulo}}">
             <br></br>
             <p className="textForm">Data da Publicação:</p>
-            <input class="form2" type="date" name="datapubli" id="datapubli">
+            <input class="form2" type="date" name="datapubli" id="datapubli" value="{{post.datapubli}}">
             <p class="textForm">Texto da Notícia:</p>
-            <textarea class="form3" name="textoNot"></textarea>
+            <textarea class="form3" name="textoNot">{{post.textoNot}}</textarea>
+            <br></br>
             <br></br>
             <p className="textForm">Imagem da Notícia:</p>
             <input type="file" name="image" />
-
-            <button type="submit">Atualizar Notícia</button>
+            <button className="botao" type="submit">Atualizar Notícia</button>
             <br>
         </form>
     </div>

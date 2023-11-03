@@ -69,7 +69,16 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 //Config
-
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${day}-${month}-${year}`;
+}
+function formatTexto(texto) {
+    // Adiciona uma quebra de linha antes de cada nova linha no texto
+    return texto.replace(/\n/g, '\n');
+}
 
 
 //Rotas
@@ -84,6 +93,7 @@ app.post('/publicado', upload.single("image"), (req, res) => {
     if (!publicador || !tituloNot || !subtitulo || !datapubli || !textoNot) {
         return res.render('Publicacao', { error: "Todos os campos devem ser preenchidos!", publicador, tituloNot, subtitulo, datapubli, textoNot });
     }
+
     Post.create({
         publicador,
         tituloNot,
@@ -98,54 +108,8 @@ app.post('/publicado', upload.single("image"), (req, res) => {
 
 });
 
-//Leitura
-//json
-app.get('/postagens', async (req, res) => {
-    try {
-        // Busque todas as postagens do banco de dados
-        const postagens = await Post.findAll();
-
-        // Mapeie os dados para o formato desejado
-        const dadosFormatados = postagens.map(postagem => ({
-            publicador: postagem.publicador,
-            titulo: postagem.tituloNot,
-            subtitulo: postagem.subtitulo,
-            dataPublicacao: postagem.datapubli,
-            texto: postagem.textoNot
-        }));
-
-        // Responda com os dados formatados
-        res.json(dadosFormatados);
-    } catch (error) {
-        console.error('Erro ao buscar postagens:', error);
-        res.status(500).json({ error: 'Erro ao buscar postagens' });
-    }
-});
-
-app.get('/api/postagens', async (req, res) => {
-    try {
-        // Busque todas as postagens do banco de dados
-        const postagens = await Post.findAll();
-
-        // Mapeie os dados para o formato desejado
-        const dadosFormatados = postagens.map(postagem => ({
-            publicador: postagem.publicador,
-            titulo: postagem.tituloNot,
-            subtitulo: postagem.subtitulo,
-            dataPublicacao: postagem.datapubli ? formatDate(postagem.datapubli) : "N/A",
-            texto: postagem.textoNot
-        }));
-
-        // Responda com os dados formatados
-        res.json(dadosFormatados);
-    } catch (error) {
-        console.error('Erro ao buscar postagens:', error);
-        res.status(500).json({ error: 'Erro ao buscar postagens' });
-    }
-});
 
 //Noticias
-
 app.get('/noticias', (req, res) => {
     Post.findAll({ order: [['id', 'desc']] }).then(function (posts) {
         const formattedPosts = posts.map(post => {
@@ -163,19 +127,9 @@ app.get('/noticias', (req, res) => {
     });
 });
 
-
-
-
-
-
-
-
-
-//
 //EXCLUIR NOTÍCIA
 app.post('/excluir-noticia/:id', async (req, res) => {
     const postId = req.body.postId;
-
     try {
         const post = await Post.findByPk(postId);
 
@@ -193,47 +147,6 @@ app.post('/excluir-noticia/:id', async (req, res) => {
         res.status(500).send('Erro interno do servidor');
     }
 });
-
-//testes
-
-
-function formatDate(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${day}-${month}-${year}`;
-}
-function formatTexto(texto) {
-    // Adiciona uma quebra de linha antes de cada nova linha no texto
-    return texto.replace(/\n/g, '\n');
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-
-/*
-app.get('/:id', async (req, res) => {
-    const postId = req.params.id;
-
-    try {
-        const post = await Post.findByPk(postId);
-
-        if (!post) {
-            return res.status(404).send('Notícia não encontrada');
-        }
-
-        // Renderizar a página de detalhes da notícia
-        res.render('news', { post });
-    } catch (error) {
-        console.error('Erro ao buscar notícia:', error);
-        res.status(500).send('Erro interno do servidor');
-    }
-});
-
-*/
-
-
 //ATUALIZAR NOTÍCIA
 
 app.get('/atualizar_noticia/:id', async (req, res) => {
@@ -243,174 +156,45 @@ app.get('/atualizar_noticia/:id', async (req, res) => {
         if (!post) {
             return res.status(404).send('Notícia não encontrada');
         }
-        //res.send('id: ', + req.params.id)
-        res.render('atualizar_noticia', { Post: post }); // Adicione { Post: post }
+        const formattedPost = {
+            id: post.id,
+            createdAt: post.createdAt,
+            tituloNot: post.get('tituloNot'),
+            subtitulo: post.get('subtitulo'),
+            publicador: post.get('publicador'),
+            textoNot: post.get('textoNot'),
+            datapubli: post.get('datapubli')
+        };
+
+        res.render('atualizar_noticia', { post: formattedPost, formatDate });
     } catch (error) {
-        console.error('Erro ao buscar notícia para atualização:', error);
-        res.status(500).send('Erro interno do servidor');
+        console.error(error);
+        res.status(500).send('Erro ao buscar a notícia');
     }
 });
-/*
-app.post('/editar_noticia/:id', async (req, res) => {
-    const postId = req.params.id;
 
+app.post('/atualizar_noticia/:id', upload.single("image"), async (req, res) => {
     try {
+        const postId = req.params.id;
         const post = await Post.findByPk(postId);
-
         if (!post) {
             return res.status(404).send('Notícia não encontrada');
         }
-
+        // req.file é o que recebe a imagem
         const { publicador, tituloNot, subtitulo, datapubli, textoNot } = req.body;
 
-        // Atualizar os dados do post existente
-        await post.update({
-            publicador,
-            tituloNot,
-            subtitulo,
-            datapubli,
-            textoNot
-        });
-
-        // Redirecionar para a página de notícias após a atualização
-        res.redirect('/noticias');
-
-    } catch (error) {
-        console.error('Erro ao buscar notícia para atualização:', error);
-        res.status(500).send('Erro interno do servidor');
-    }
-});
-/** */
-
-app.post('/atualizar_noticia/:id', async (req, res) => {
-    const postId = req.params.id;
-
-    try {
-        const post = await Post.findByPk(postId);
-
-        if (!post) {
-            return res.status(404).send('Notícia não encontrada');
+        if (datapubli) {
+            post.datapubli = datapubli;
         }
+        post.publicador = publicador;
+        post.tituloNot = tituloNot;
+        post.subtitulo = subtitulo;
+        post.textoNot = textoNot;
 
-        // Obtenha os dados do formulário
-        const { publicador, tituloNot, subtitulo, datapubli, textoNot } = req.body;
-
-        post.publicador = req.body.publicador,
-        post.tituloNot = req.body.tituloNot,
-        post.subtitulo = req.body.subtitulo,
-        post.datapubli = req.body.datapubli,
-        post.textoNot = req.body.textoNot
-        await Post.save(); 
-    
-        res.redirect('/noticias');
-
-    } catch (error) {
-        console.error('Erro ao buscar notícia para atualização:', error);
-        res.status(500).send('Erro interno do servidor');
-    }
-});
-
-/*
-app.get('/atualizar_noticia/:id', async (req, res) => {
-    const postId = req.params.id;
-    try {
-        const post = await Post.findByPk(postId);
-
-        if (!post) {
-            return res.status(404).send('Notícia não encontrada');
-        }
-        // Renderizar a página de atualização de notícia
-        res.render('atualizar_noticia')
-    } catch (error) {
-        console.error('Erro ao buscar notícia para atualização:', error);
-        res.status(500).send('Erro interno do servidor');
-    }
-});
-
-
-app.put('/atualizar_noticia/:id', upload.single("image"), async (req, res) => {
-    let id = req.params.id;
-    let tituloNot = req.body.tituloNot;
-    let subtitulo = req.body.subtitulo;
-    let publicador = req.body.publicador;
-    let textoNot = req.body.textoNot;
-    
-    // Certifique-se de que a tabela e os campos estejam corretos no seu banco de dados
-    let cmd = 'UPDATE postagens SET tituloNot = ?, subtitulo = ?, publicador = ?, textoNot = ? WHERE id = ?;';
-
-    db.query(cmd, [tituloNot, subtitulo, publicador, textoNot, id], function (erro, resultados) {
-        if (erro) {
-            res.send(erro);
-        }
-        res.redirect(303, '/noticias');
-    });
-});
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-app.get('/atualizar_noticia/:id', async (req, res) => {
-    const postId = req.params.id;
-
-    try {
-        const post = await Post.findByPk(postId);
-
-        if (!post) {
-            return res.status(404).send('Notícia não encontrada');
-        }
-
-        // Renderizar a página de edição da notícia
-        res.render('atualizar_noticia', { post });
-    } catch (error) {
-        console.error('Erro ao buscar notícia para edição:', error);
-        res.status(500).send('Erro interno do servidor');
-    }
-});
-
-
-
-app.post('/atualizar_noticia/:id', upload.single('image'), async (req, res) => {
-    const postId = req.params.id;
-
-    try {
-        // Encontrar a notícia pelo ID
-        const post = await Post.findByPk(postId);
-
-        if (!post) {
-            return res.status(404).send('Notícia não encontrada');
-        }
-
-        // Atualizar os campos da notícia com base nos dados do formulário
-        post.publicador = req.body.publicador;
-        post.tituloNot = req.body.tituloNot;
-        post.subtitulo = req.body.subtitulo;
-        post.datapubli = req.body.datapubli;
-        post.textoNot = req.body.textoNot;
-
-        // Se um arquivo de imagem for enviado, atualizar o caminho da imagem
-        //if (req.file) {
-           // post.imagePath = req.file.path; // Supondo que o modelo tenha um campo 'imagePath'
-       // }
-
-        // Salvar as alterações no banco de dados
+        // Salva as alterações no banco de dados
         await post.save();
 
-        // Redirecionar para a página da notícia atualizada ou fazer qualquer outra coisa que você deseja
         res.redirect('/noticias');
-
     } catch (error) {
         console.error('Erro ao atualizar notícia:', error);
         res.status(500).send('Erro interno do servidor');
@@ -420,36 +204,65 @@ app.post('/atualizar_noticia/:id', upload.single('image'), async (req, res) => {
 
 
 
-app.post('/atualizddar_noticias/:id', async (req, res) => {
-    const postId = req.params.id;
-    console.log('Rota /atualizarNoticia acionada por POST, ID:', postId);
+
+//NOTICIA SEPARADA
+app.get('/news/:id', async (req, res) => {
     try {
+        const postId = req.params.id;
         const post = await Post.findByPk(postId);
 
         if (!post) {
             return res.status(404).send('Notícia não encontrada');
         }
 
-        // Atualizar os campos com os valores do formulário
-        post.publicador = req.body.publicador;
-        // Atualize outros campos conforme necessário
+        const formattedPost = {
+            id: post.id,
+            createdAt: post.createdAt,
+            tituloNot: post.get('tituloNot'),
+            subtitulo: post.get('subtitulo'),
+            publicador: post.get('publicador'),
+            textoNot: post.get('textoNot'),
+            datapubli: post.get('datapubli')
+        };
 
-        // Salvar as alterações
+        res.render('news', { post: formattedPost, formatDate });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao buscar a notícia');
+    }
+});
+
+
+/*
+app.post('/atualizar_noticia/:id', upload.single("image"), async (req, res) => {
+    try {    
+        const postId = req.params.id;
+        const post = await Post.findByPk(postId);
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        //req.file é o que recebe a imagem
+        const { publicador, tituloNot, subtitulo, datapubli, textoNot } = req.body;
+        post.publicador = publicador;
+        post.tituloNot = tituloNot;
+        post.subtitulo = subtitulo;
+        post.datapubli = datapubli;
+        post.textoNot = textoNot;
+        
+        // Salve as alterações no banco de dados
         await post.save();
 
-        // Redirecionar para a página de notícias
         res.redirect('/noticias');
     } catch (error) {
         console.error('Erro ao atualizar notícia:', error);
         res.status(500).send('Erro interno do servidor');
     }
 });
-
 */
 
 
-
-
+//////////////////////////////// TESTES///////////////////////
 app.get('/nnoticias', (req, res) => {
     Post.findAll({ order: [['id', 'desc']] }).then(function (posts) {
         let lastCreatedAt = null; // Inicializa lastCreatedAt
@@ -496,54 +309,7 @@ app.get('/BANCOTESTE', (req, res) => {
     res.render('TesteJson')
 })
 
-app.get('/postagem', (req, res) => {
-    res.send("Postagens")
-})
-/*
-//app.get('/news/:id', (req, res) =>{
-   // res.render('news')
-//})
-app.get('/news/:id', async (req, res) => {
-    try {
-        const postId = req.params.id;
-        const post = await Post.findByPk(postId);
 
-        if (!post) {
-            return res.status(404).send('Notícia não encontrada');
-        }
-
-        res.render('news', { post, formatDate }); 
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Erro ao buscar a notícia');
-    }
-});
-*/
-app.get('/news/:id', async (req, res) => {
-    try {
-        const postId = req.params.id;
-        const post = await Post.findByPk(postId);
-
-        if (!post) {
-            return res.status(404).send('Notícia não encontrada');
-        }
-
-        const formattedPost = {
-            id: post.id,
-            createdAt: post.createdAt,
-            tituloNot: post.get('tituloNot'),
-            subtitulo: post.get('subtitulo'),
-            publicador: post.get('publicador'),
-            textoNot: post.get('textoNot'),
-            datapubli: post.get('datapubli')
-        };
-
-        res.render('news', { post: formattedPost, formatDate }); 
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Erro ao buscar a notícia');
-    }
-});
 
 
 
