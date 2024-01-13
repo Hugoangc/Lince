@@ -1,0 +1,36 @@
+{{#if isNewDate}}
+<h2>{{post.createdAt}}</h2>
+{{/if}}
+<!-- noticia sozinha -->
+
+
+<body>
+  <div class="news-box">
+    <div class="mold m-4">
+      <div class="cab m-5">
+        {{#if post.image}}
+        <img class="img col-md-6 offset-md-3 text-center" src="/uploads/{{post.image}}" style="max-width: 50%; max-height: 70%;">
+        {{/if}}
+      </div>
+      <div class="m-2 px-5">
+        <h1 class="titul">{{post.tituloNot}}</h1>
+        <p class="aut">{{post.publicador}}</p>
+      </div>
+      <div>
+        <br>
+        <p class="datpu" style="margin-left: 50px;">{{formatDate post.datapubli}}</p>
+        <!--
+        <p class="texto m-5">
+          {{post.subtitulo}}
+        </p>-->
+        <p class="texto m-5">
+          {{{post.textoNot}}}
+        </p>
+        <div class="m-3">
+          <p class="datpu" style="position: absolute; right: 0; margin-right: 110px;"><small>Atualizado em: {{formatDate
+              post.createdAt}}</small></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>

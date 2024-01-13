@@ -2,29 +2,55 @@
 <html lang="pt-br">
 
 <head>
-    <header className='header'>
-        <img className="logo_class" src='/img/lince_logo.png' />
-        <a className="topico1" href="/projetos">PROJETOS</a>
-        <a className="topicos" href="/participacao-em-eventos">EVENTOS</a>
-        <BrowserRouter>
-            <a class="topicos" href="/publicar">PUBLICAR</a>
-        </BrowserRouter>
-        <a className="topicos" href="/contato">CONTATE-NOS</a>
-        <a className="topicos" href="/sobre">SOBRE NÓS</a>
-        <a className="topicos" href="/">VOLTAR</a>
-        <img className="simbolo_login" src='/img/simbolo_login.png' />
-    </header>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="postar.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
-    <!--<link rel="stylesheet" href="css/App.css">
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/Publicacao.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-    <title>Sistema de Publicacao do LINCE</title>
+    <link rel="stylesheet" href="/css/postar.css">
 </head>
+
+<header className='header'>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <a class="collapse navbar-collapse" href="/">
+          <img class="logo" src="/img/lince_logo.png" alt="Logo">
+      </a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item1 py-4">
+            <a class="nav-link active" aria-current="page" href="/noticias">NOTÍCIAS</a>
+          </li>
+          <li class="nav-item py-4">
+            <a class="nav-link active" href="/publicar">PUBLICAR</a>
+          </li>
+        </ul>
+        <img class="login" src="/img/simbolo_login.png">
+      </div>
+    </div>
+  </nav>
+  </header>
+
+
 
 <body>
     {{{body}}}
 </body>
-<img className='lince_foot' src='/img/lince_foot.png' />
 
+<footer> 
+  <div class="rodape">
+      <a class="info">Laboratório de Iniciação Científica e Extensão da Computação</a>
+      <a class="info">CEFET-MG Unidade Leopoldina, Sala 6-209</a>
+      <a class="info">Rua José Peres, 558 - Centro</a>
+      <a class="info">Leopoldina - MG</a>
+      <a class="info">+55 (32) 3449-2346</a>
+  </div>
+</footer>
 </html>

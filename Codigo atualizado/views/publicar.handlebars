@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicação de Notícias</title>
+  <script src="https://cdn.tiny.cloud/1/elwuvzj21dn7x0kiw0vhdhl8zs8qyt2bzhwyzxwe42i4qtdi/tinymce/5/tinymce.min.js"
+    referrerpolicy="origin"></script>
+
+</head>
+
+<body>
+  <p class="titulo">Publicação de Notícias</p>
+  <hr class="linha">
+  <div class="card mb-3">
+    <div class="card-body">
+      <form action="/publicado" method="POST" enctype="multipart/form-data" id="formulario"
+        onsubmit="return validateForm()">
+        <!-- Se houver erro, exibe a mensagem -->
+        {{#if error}}
+        <p class="text-danger">{{error}}</p>
+        {{/if}}
+        <p class="textForm">Publicador(es):</p>
+        <label for="publicador"></label>
+        <input class="form1" type="text" id="publicador" name="publicador" />
+        <br />
+        <br>
+        <p class="textForm">Título da Notícia:</p>
+        <label for="tituloNot"></label>
+        <input class="form1" type="text" id="tituloNot" name="tituloNot" />
+        <br />
+        <br>
+        <p class="textForm">Resumo da Notícia:</p>
+        <label for="subtitulo"></label>
+        <textarea class="form4" type="text" id="subtitulo" name="subtitulo"></textarea>
+        <br />
+        <br>
+        <p class="textForm">Texto da Notícia:</p>
+        <label for="convenio"></label>
+        <textarea class="form3 tinymce" minlength="20" name="textoNot"></textarea>
+        <br />
+        <br>
+        <div class="mb-3">
+          <label for="formFile" class="form-label textForm">Imagem da Notícia:</label>
+          <input class="form-control" type="file" id="formFile" name="image" accept="image/*">
+          <small class="text-muted">Tamanho máximo: 5MB</small>
+        </div>
+        <button type="submit" class="btn btn-warning m-3 px-5">Publicar Notícia</button>
+      </form>
+    </div>
+  </div>
+
+<script>
+  function validateForm() {
+    var input = document.getElementById('formFile');
+    if (input.files.length > 0) {
+      var fileSize = input.files[0].size; // em bytes
+      var maxSize = 54 * 1024 * 1024; // 5MB
+      var maxWidth = 2000; // Largura máxima permitida
+      var maxHeight = 2000; // Altura máxima permitida
+
+      if (fileSize > maxSize) {
+        alert('O tamanho do arquivo excede o limite permitido (5MB).');
+        return false;
+      }
+
+      var img = new Image();
+      img.onload = function() {
+        if (img.height > maxHeight) {
+          alert('As dimensões da imagem devem ser no máximo 1000x1000 pixels.');
+        } else {
+          // Se passou por todas as verificações, o formulário é válido
+          document.getElementById('formulario').submit();
+        }
+      };
+
+      img.src = URL.createObjectURL(input.files[0]);
+      
+      // Evitar que o formulário seja enviado antes do carregamento da imagem
+      return false;
+    }
+
+    // Se não houver arquivo, o formulário é válido
+    return true;
+  }
+</script>
+
+<script>
+  // Inicialize o TinyMCE
+  tinymce.init({
+    selector: 'textarea.tinymce',
+    height: 300, // Altura do editor
+    plugins: 'link image code',
+    toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | code',
+    content_style: 'body { text-align: justify; }', // Centraliza o conteúdo do editor
+    valid_elements: '*[*]',
+    extended_valid_elements: '*[*]',
+    valid_children: '+body[style],+body[div]',
+    indentation: '40pt',
+    indent_use_margin: true,
+    verify_html: false,
+    custom_tabindent: true
+  });
+</script>
+
+</body>
+
+</html>

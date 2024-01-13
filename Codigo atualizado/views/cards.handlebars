@@ -1,0 +1,101 @@
+{{#if errorMessage}}
+<div class="alert alert-danger" role="alert">
+  {{errorMessage}}
+</div>
+{{/if}}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="postar.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <title>Notícias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="d-flex justify-content-end mt-3">
+    <form action="/cards/search" method="GET" class="col-md-2">
+      <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Pesquisar Notícia">
+        <div class="input-group-append">
+          <button type="submit" class="btn btn-dark">Buscar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  {{#each posts}}
+  {{#if isNewDate}}
+  <h2>{{formatDate datapubli}}</h2>
+  {{/if}}
+  <div class="card mb-3 mx-auto" style="max-width: 1250px;">
+    <div class="row g-0">
+      <div class="col-md-4">
+        {{#if image}}
+        <img src="/uploads/{{image}}" class="img-fluid rounded-start m-3" alt="{{tituloNot}}" style="max-width:100%;">
+        {{else}}
+        <!-- Adicione uma imagem padrão se não houver imagem associada à notícia -->
+        <img src="/img/cefet.png" class="img-fluid rounded-start m-5" alt="Imagem Padrão">
+        {{/if}}
+      </div>
+      <div class="col-md-8">
+        <div class="card-body m-4">
+          <h5 class="card-title">{{tituloNot}}</h5>
+          <p class="card-text">{{subtitulo}}</p>
+          <p class="card-text"><small class="text-body-secondary">{{formatDate datapubli}}</small></p>
+          <a class="btn btn-dark" href="/noticia/{{id}}" role="button">Saiba mais</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{/each}}
+
+
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+
+        <li class="page-item {{#unless hasPrevPage}}disabled{{/unless}}">
+            <a href="{{#if hasPrevPage}}/noticias?page={{prevPage}}{{else}}javascript:void(0);{{/if}}" class="btn btn-dark">Anterior</a>
+        </li>
+
+        {{#if hasPrevPage}}
+            <li class="pagination-color">
+        <a class="btn btn-dark pagination-color" href="/noticias?page={{prevPage}}">{{prevPage}}</a>
+            </li>
+        {{/if}}
+
+        <li class="disabled">
+            <a class="btn btn-dark" style="color: #FED428;" href="#">{{currentPage}}</a>
+        </li>
+
+        {{#if hasNextPage}}
+            <li class="pagination-color">
+                <a class="btn btn-dark" href="/noticias?page={{nextPage}}">{{nextPage}}</a>
+            </li>
+        {{/if}}
+
+        <li class="page-item {{#unless hasNextPage}}disabled{{/unless}}">
+            <a href="{{#if hasNextPage}}/noticias?page={{nextPage}}{{else}}javascript:void(0);{{/if}}" class="btn btn-dark">Próxima</a>
+        </li>
+  <!--
+        <li class="page-item">
+            <a href="/noticias" class="btn btn-dark {{#unless hasPrevPage}}disabled{{/unless}}">Primeira</a>
+        </li>
+
+        <li class="page-item">
+            <a href="/noticias?page={{totalPages}}" class="btn btn-dark {{#unless hasNextPage}}disabled{{/unless}} pagination-color">Última</a>
+        </li>-->
+    </ul>
+</nav>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link href="css/postar.css" rel="stylesheet">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+            <title>Publicar</title>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        </head>
+        <header className='header'>
+          <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <a class="collapse navbar-collapse" href="/">
+                  <img class="logo" src="/img/lince_logo.png" alt="Logo">
+              </a>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item1 py-4">
+                    <a class="nav-link active" aria-current="page" href="/noticias">NÓTICIAS</a>
+                  </li>
+                  <li class="nav-item py-4">
+                    <a class="nav-link active" href="/publicar">PUBLICAR</a>
+                  </li>
+                </ul>
+                <img class="login" src="/img/simbolo_login.png">
+              </div>
+            </div>
+          </nav>
+          </header>
+<body>
+  <p class="titulo">Publicação de Notícias</p>
+  <hr class="linha">
+  <div class="card mb-3">
+    <div class="card-body">
+      <form action="" id="formulario">
+        <p class="textForm">Publicador(es):</p>
+        <label for="publicador"></label>
+        <input class="form1" type="text" id="publicador" />
+        <br />
+        <br>
+        <p class="textForm">Título da Notícia:</p>
+        <label for="tituloNot"></label>
+        <input class="form1" type="text" id="tituloNot" />
+        <br />
+        <br>
+        <p class="textForm">Data da Publicação:</p>
+        <label for="dataPubli"></label>
+        <input class="form2" type="date" id="datapubli" />
+        <br />
+        <br>
+        <p class="textForm">Texto da Notícia:</p>
+        <label for="convenio"></label>
+        <textarea class="form3" minlength=20  maxlength=255 name="textoNot"></textarea>
+        <br />
+        <br>
+        <div class="mb-3">
+            <label for="formFile" class="form-label textForm">Imagem da Notícia:</label>
+            <input class="form-control" type="file" id="formFile">
+        </div>
+        <button type="button" class="btn btn-warning m-3 px-5">Publicar Notícia</button>
+      </form>
+    </div>
+  </div>
+</body>
+<footer>
+  <div class="rodape">
+      <a class="info">Laboratório de Iniciação Científica e Extensão da Computação</a>
+      <a class="info">CEFET-MG Unidade Leopoldina, Sala 6-209</a>
+      <a class="info">Rua José Peres, 558 - Centro</a>
+      <a class="info">Leopoldina - MG</a>
+      <a class="info">+55 (32) 3449-2346</a>
+  </div>
+</footer>
+</html>

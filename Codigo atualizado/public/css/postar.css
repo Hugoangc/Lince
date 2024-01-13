@@ -1,0 +1,258 @@
+.navbar{
+    background-color:#FED428;
+}
+.nav-item{
+    color:#000;
+    font-family: Roboto;
+    font-size: 1.125rem;
+}
+.nav-item1{
+    color:#000;
+    font-family: Roboto;
+    font-size: 1.125rem;
+    padding-left: 995px;
+    padding-right: 15px;
+}
+.logo{
+    width: 4.625rem;
+    height: 4.75rem;
+    position: absolute;
+    margin-left: 40px;
+}
+.login{
+    padding-right: 60px;
+}
+.titulo{
+    color: #000;
+    font-family: Roboto;
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin: 30px;
+}
+.linha{
+    margin: 30px;
+}
+.card{
+    margin: 26px;
+    color:#afafaf;
+}
+.textForm{
+    color: #000;
+    font-family: Roboto;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.form1{
+    width: 1250px;
+    height: 30px;
+    border-radius: 0.3125rem;
+    border: 1px solid #000;
+    background: #FFF;
+}
+.form2{
+    border-radius: 0.3125rem;
+    border: 1px solid #000;
+    height: 30px;
+}
+.form3{
+    width: 1250px;
+    height: 23.375rem;
+    border-radius: 0.3125rem;
+    border: 1px solid #000;
+    background: #FFF;
+}
+.form4{
+    width: 900px;
+    height: 23.375rem;
+    border-radius: 0.3125rem;
+    border: 1px solid #000;
+    background: #FFF;
+}
+.row{
+    border: 2px solid #afafaf;
+    border-radius: 0.3125rem;
+}
+.card-title{
+    font-size:23px;
+}
+.mold{
+    border:2px solid #afafaf;
+    word-wrap:break-word;
+}
+
+.titul{
+    color: #000;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    padding-top: 40px;
+}
+.dat{
+    font-size: 15px;
+    font-family: Roboto;
+}
+.datpu{
+    font-size: 15px;
+    font-family: Roboto;
+    color: #000;
+}
+.aut{
+    font-size: 17px;
+    font-family: Roboto;
+}
+.cab{
+    display: flex;
+}
+.cab2{
+    display: flex;
+}
+.texto{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.titul{
+    text-align: justify;
+}
+.rodape{
+    background-color:#FED428;
+    width: 100%;
+    height: 130px;
+    bottom: 0;
+    left: 0;
+}
+.logof{
+    width: 4.625rem;
+    height: 4.75rem;
+    position: absolute;
+    margin-left: 80px;
+}
+.info{
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    font-family: Roboto;
+    color: #2b2a2a;
+    font-size: 17px;
+}
+
+
+
+.datpu {
+    margin-left: 50px;
+    font-weight: bold;
+}
+.img{
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.edit-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgb(20, 20, 20);
+    border: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+    cursor: pointer;
+    transition-duration: 0.3s;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none !important;
+  }
+  
+  .edit-svgIcon {
+    width: 17px;
+    transition-duration: 0.3s;
+  }
+  
+  .edit-svgIcon path {
+    fill: white;
+  }
+  
+  .edit-button:hover {
+    width: 120px;
+    border-radius: 50px;
+    transition-duration: 0.3s;
+    background-color: rgb(255, 69, 69);
+    align-items: center;
+  }
+  
+  .edit-button:hover .edit-svgIcon {
+    width: 20px;
+    transition-duration: 0.3s;
+    transform: translateY(60%);
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+  
+  .edit-button::before {
+    display: none;
+    content: "Edit";
+    color: white;
+    transition-duration: 0.3s;
+    font-size: 2px;
+  }
+  
+  .edit-button:hover::before {
+    display: block;
+    padding-right: 10px;
+    font-size: 13px;
+    opacity: 1;
+    transform: translateY(0px);
+    transition-duration: 0.3s;
+  }
+
+
+
+
+.search{
+    display:flex;
+    align-items: end;
+}
+
+
+.news-content {
+    text-align: justify;
+    margin-left: 50px;
+    margin-right:50px;
+  }
+
+.mce-content-body {
+    text-align: center !important;
+}
+
+.pagination-color{
+    color:#FED428
+}  
+.pagination-link {
+      display: inline-block;
+      padding: 8px 12px;
+      margin: 4px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      text-decoration: none;
+      color: #333;
+      transition: background-color 0.3s;
+  }
+
+
+
+
+
+
+
+

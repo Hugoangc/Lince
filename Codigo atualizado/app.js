@@ -2,11 +2,9 @@
 const express = require("express");
 const app = express();
 const handlebars = require('express-handlebars')
-const admin = require("./routes/admin") //importando page.js
+//const admin = require("./routes/admin") //importando page.js
 const path = require("path") // diretorios
 const Post = require('./models/Post')
-const Banco = require('./models/Banco')
-const session = require("express-session")
 const flash = require("connect-flash")
 const multer = require("multer") //lidar com uploads de arquivos
 const router = express.Router();
@@ -21,46 +19,54 @@ app.engine('handlebars', handlebars.engine({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 
 
-//Sessao
-app.use(session({
-    secret: "sistemapub",
-    resave: true,
-    saveUninitialized: true
-}))
+
 
 //Public
 app.use(express.static(path.join(__dirname, "public")))
-app.use(flash())
 
-//Middlewares geral
-app.use((req, res, next) => {
-    res.locals.sucess_msg = req.flash("sucesso_msg")
-    res.locals.error_msg = req.flash("error_msg")
-    next()
+
+//Noticia unica data
+handle.registerHelper('formatDate', function (date) {
+    const parsedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);;
+
+    if (isNaN(parsedDate.getTime())) {
+        return 'Data inválida';
+    }
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+    // Transforma a primeira letra do dia da semana em maiúscula
+    return parsedDate.toLocaleDateString('pt-BR', options).replace(/^\w/, (c) => c.toUpperCase());
+});
+
+//Cards data
+function formatDate(date) {
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+
+    const formattedDate = date.toLocaleDateString('pt-BR', options);
+
+    // Transforma a primeira letra do dia da semana em maiúscula
+    return formattedDate.replace(/^\w/, (c) => c.toUpperCase());
+}
+
+app.get('/', (req, res) => {
+    res.render('ArquivoTest');
 })
 
 
-handle.registerHelper('formatDate', function (date) {
-    // Certifique-se de que 'date' é uma instância válida de Date
-    const parsedDate = new Date(date);
-
-    if (isNaN(parsedDate.getTime())) {
-        // Se 'date' não é uma data válida, retorne uma string vazia ou uma mensagem de erro
-        return 'Data inválida';
-    }
-
-    const year = parsedDate.getFullYear();
-    const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
-    const day = String(parsedDate.getDate()).padStart(2, '0');
-
-    return `${day}-${month}-${year}`;
-});
-
-
 //Multer - MiddleWare que lida com arquivos
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "uploads/")
+        cb(null, "public/uploads/")
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname + Date.now() + path.extname(file.originalname));
@@ -68,67 +74,245 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage })
 
+
+
+
+
+
 //Config
-function formatDate(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${day}-${month}-${year}`;
-}
-function formatTexto(texto) {
-    // Adiciona uma quebra de linha antes de cada nova linha no texto
-    return texto.replace(/\n/g, '\n');
-}
 
 
-//Rotas
+const sharp = require('sharp');
+
+function resizeImage(src, options) {
+    return sharp(src)
+        .resize(options.width, options.height)
+        .toBuffer();
+}
+const loadImage = require('blueimp-load-image');
+
+function resizeImage(src, options) {
+    return loadImage(document.createElement('img'), src).then(function (image) {
+
+        var canvas = document.createElement('canvas');
+
+        if (options.width && !options.height) {
+            options.height = image.height * (options.width / image.width);
+        } else if (!options.width && options.height) {
+            options.width = image.width * (options.height / image.height);
+        }
+
+        Object.assign(canvas, options);
+
+        canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        return new Promise(function (resolve) {
+            canvas.toBlob(resolve, options.type || 'image/png', options.quality);
+        });
+    });
+}
 
 ///////////////////////  CRUD
 //Publicar
 app.get('/publicar', (req, res) => {
-    res.render('Publicacao')
+    res.render('publicar')
 })
-app.post('/publicado', upload.single("image"), (req, res) => {
+app.post('/publicado', upload.single("image"), async (req, res) => {
     const { publicador, tituloNot, subtitulo, datapubli, textoNot } = req.body;
-    if (!publicador || !tituloNot || !subtitulo || !datapubli || !textoNot) {
-        return res.render('Publicacao', { error: "Todos os campos devem ser preenchidos!", publicador, tituloNot, subtitulo, datapubli, textoNot });
+    const image = req.file ? req.file.filename : null;
+    if (!publicador || !tituloNot || !subtitulo || !textoNot) {
+        return res.render('publicar', { error: "Todos os campos devem ser preenchidos!", publicador, tituloNot, subtitulo, datapubli, textoNot });
     }
-
+    if (image) {
+        const resizedImageBlob = await sharp(image, { width: 300, height: 200 });//precisa ser implementado
+    }
+    const createdAt = new Date();
     Post.create({
         publicador,
         tituloNot,
         subtitulo,
-        datapubli,
-        textoNot
+        datapubli: createdAt,
+        textoNot,
+        image
     }).then(() => {
         res.redirect('/noticias');
     }).catch((erro) => {
         res.send("Houve um erro: " + erro);
     });
+});
 
+//CARDS
+handle.registerHelper('eachPage', function (totalPages, currentPage, options) {
+    let result = '';
+    for (let i = 1; i <= totalPages; i++) {
+        result += options.fn({ page: i, isCurrent: i === currentPage });
+    }
+    return result;
 });
 
 
-//Noticias
 app.get('/noticias', (req, res) => {
-    Post.findAll({ order: [['id', 'desc']] }).then(function (posts) {
-        const formattedPosts = posts.map(post => {
-            return {
-                id: post.id, // Adicione esta linha para incluir o ID
+    const page = parseInt(req.query.page, 10) || 1;
+    const perPage = 10;
+    const pagesToShow = 5; // Defina o número de páginas a serem exibidas
+
+    Post.findAndCountAll({
+        order: [['datapubli', 'desc']],
+        limit: perPage,
+        offset: (page - 1) * perPage,
+    }).then(function (result) {
+        const totalPages = Math.ceil(result.count / perPage);
+        const nextPage = page + 1;
+        const hasNextPage = nextPage <= totalPages;
+        const prevPage = page - 1;
+        const hasPrevPage = prevPage >= 1;
+
+        const visiblePages = [];
+        for (let i = Math.max(1, page - Math.floor(pagesToShow / 2)); i <= Math.min(totalPages, page + Math.floor(pagesToShow / 2)); i++) {
+            visiblePages.push(i);
+        }
+
+        res.render('cards', {
+            posts: result.rows.map(post => ({
+                id: post.id,
                 createdAt: post.createdAt,
+                datapubli: post.get('datapubli'),
                 tituloNot: post.get('tituloNot'),
                 subtitulo: post.get('subtitulo'),
                 publicador: post.get('publicador'),
-                textoNot: post.get('textoNot')
-            };
+                textoNot: post.get('textoNot'),
+                image: post.get('image'),
+            })),
+            totalPages,
+            currentPage: page,
+            hasNextPage,
+            nextPage,
+            hasPrevPage,
+            prevPage,
+            isFirstPage: page === 1,
+            isLastPage: page === totalPages,
+            visiblePages,
         });
-
-        res.render('noticias', { posts: formattedPosts });
     });
 });
 
+
+
+//Search
+const { Op } = require('sequelize'); //Variável auxiliar para o search
+app.get('/cards/search', async (req, res) => {
+    try {
+        const searchTerm = req.query.q;
+        const SPECIAL_CHARACTERS_REGEX = /[!@#$%^&*(),.?":{}|<>]/;
+
+        if (typeof searchTerm !== 'string' || SPECIAL_CHARACTERS_REGEX.test(searchTerm)) {
+            const errorMessage = 'Parâmetro de pesquisa inválido';
+            const posts = []; // Array vazio se houver um erro
+            return res.render('cards', { posts, errorMessage });
+        }
+
+        const posts = await Post.findAll({
+            where: {
+                [Op.and]: [
+                    {
+                        [Op.or]: [
+                            {
+                                tituloNot: {
+                                    [Op.like]: `%${searchTerm}%`
+                                }
+                            },
+                            {
+                                textoNot: {
+                                    [Op.like]: `%${searchTerm}%`
+                                }
+                            },
+                            {
+                                publicador: {
+                                    [Op.like]: `%${searchTerm}%`
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        visualizacao: {
+                            [Op.ne]: 0 // Excluir notícias com visualizacao igual a 0
+                        }
+                    }
+                ]
+            },
+            order: [['id', 'desc']]
+        });
+
+        const formattedPosts = posts.map(post => {
+            return {
+                id: post.id,
+                createdAt: post.createdAt,
+                datapubli: post.get('datapubli'),
+                tituloNot: post.get('tituloNot'),
+                subtitulo: post.get('subtitulo'),
+                publicador: post.get('publicador'),
+                textoNot: post.get('textoNot'),
+                image: post.get('image')
+            };
+        });
+
+        res.render('cards', { posts: formattedPosts });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(`Erro interno do servidor: ${error.message}`);
+    }
+});
+
+//NOTICIA UNICA
+app.get('/noticia/:id', async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        const formattedPost = {
+            id: post.id,
+            createdAt: post.createdAt,
+            tituloNot: post.get('tituloNot'),
+            subtitulo: post.get('subtitulo'),
+            publicador: post.get('publicador'),
+            textoNot: post.get('textoNot'),
+            datapubli: post.get('datapubli'),
+            image: post.get('image')
+        };
+        res.render('noticia', { post: formattedPost, formatDate });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao buscar a notícia');
+    }
+});
+
 //EXCLUIR NOTÍCIA
-app.post('/excluir-noticia/:id', async (req, res) => {
+//COMO FOI PEDIDO, A FUNCAO APENAS PASSA O VALOR DE VISUALIZACAO PARA 0
+app.post('/excluir-noticia/:id', async (req, res) => { 
+    
+    const postId = req.body.postId;
+    try {
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        // Excluir a notícia
+        post.visualizacao = 0;
+        await post.save();
+        res.redirect('/noticias');
+    } catch (error) {
+        console.error('Erro ao excluir notícia:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+/*
+app.post('/excluir-noticia/:id', async (req, res) => { //logica pra caso realmente deseja excluir a noticia
     const postId = req.body.postId;
     try {
         const post = await Post.findByPk(postId);
@@ -139,16 +323,17 @@ app.post('/excluir-noticia/:id', async (req, res) => {
 
         // Excluir a notícia
         await post.destroy();
-
-        // Redirecionar para a página de notícias
         res.redirect('/noticias');
     } catch (error) {
         console.error('Erro ao excluir notícia:', error);
         res.status(500).send('Erro interno do servidor');
     }
 });
-//ATUALIZAR NOTÍCIA
 
+*/
+
+
+//ATUALIZAR NOTÍCIA
 app.get('/atualizar_noticia/:id', async (req, res) => {
     const postId = req.params.id;
     try {
@@ -163,7 +348,8 @@ app.get('/atualizar_noticia/:id', async (req, res) => {
             subtitulo: post.get('subtitulo'),
             publicador: post.get('publicador'),
             textoNot: post.get('textoNot'),
-            datapubli: post.get('datapubli')
+            datapubli: post.get('datapubli'),
+            image: post.get('image')
         };
 
         res.render('atualizar_noticia', { post: formattedPost, formatDate });
@@ -172,7 +358,7 @@ app.get('/atualizar_noticia/:id', async (req, res) => {
         res.status(500).send('Erro ao buscar a notícia');
     }
 });
-
+const fs = require('fs');
 app.post('/atualizar_noticia/:id', upload.single("image"), async (req, res) => {
     try {
         const postId = req.params.id;
@@ -181,10 +367,25 @@ app.post('/atualizar_noticia/:id', upload.single("image"), async (req, res) => {
             return res.status(404).send('Notícia não encontrada');
         }
         // req.file é o que recebe a imagem
-        const { publicador, tituloNot, subtitulo, datapubli, textoNot } = req.body;
 
-        if (datapubli) {
-            post.datapubli = datapubli;
+        const { publicador, tituloNot, subtitulo, textoNot } = req.body;
+        const image = req.file ? req.file.filename : null;
+
+        if (image) {
+            if (post.image) {
+                const imagePath = path.join(__dirname, 'public', 'uploads', post.image);
+                post.image = image;
+                fs.unlinkSync(imagePath);
+            }
+            else{
+                post.image = image;
+            }
+        }
+        const excluirImagem = req.body.excluirImagem === 'on';
+        if (excluirImagem) {
+            const imagePath = path.join(__dirname, 'public', 'uploads', post.image);
+            post.image = null;
+            fs.unlinkSync(imagePath);
         }
         post.publicador = publicador;
         post.tituloNot = tituloNot;
@@ -194,7 +395,7 @@ app.post('/atualizar_noticia/:id', upload.single("image"), async (req, res) => {
         // Salva as alterações no banco de dados
         await post.save();
 
-        res.redirect('/noticias');
+        res.redirect('/noticia/' + postId);
     } catch (error) {
         console.error('Erro ao atualizar notícia:', error);
         res.status(500).send('Erro interno do servidor');
@@ -203,10 +404,48 @@ app.post('/atualizar_noticia/:id', upload.single("image"), async (req, res) => {
 
 
 
+//////////////////////////////// TESTES///////////////////////
 
 
-//NOTICIA SEPARADA
-app.get('/news/:id', async (req, res) => {
+app.get('/noticiaUsuario/:id', async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).send('Notícia não encontrada');
+        }
+
+        const formattedPost = {
+            id: post.id,
+            createdAt: post.createdAt,
+            tituloNot: post.get('tituloNot'),
+            subtitulo: post.get('subtitulo'),
+            publicador: post.get('publicador'),
+            textoNot: post.get('textoNot'),
+            datapubli: post.get('datapubli'),
+            image: post.get('image')
+        };
+        res.render('noticiaUsuario', { post: formattedPost, formatDate });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao buscar a notícia');
+    }
+});
+
+
+app.get('/maria', (req, res) => {
+    res.sendFile(__dirname + "/views/teste.html");
+})
+app.get('/maria2', (req, res) => {
+    res.sendFile(__dirname + "/views/teste2.html");
+})
+app.get('/maria3', (req, res) => {
+    res.sendFile(__dirname + "/views/teste3.html");
+})
+
+
+app.get('/maria/:id', async (req, res) => {
     try {
         const postId = req.params.id;
         const post = await Post.findByPk(postId);
@@ -225,97 +464,13 @@ app.get('/news/:id', async (req, res) => {
             datapubli: post.get('datapubli')
         };
 
-        res.render('news', { post: formattedPost, formatDate });
+        res.sendFile(path.join(__dirname + "/views/teste.html"));
+
     } catch (error) {
         console.error(error);
         res.status(500).send('Erro ao buscar a notícia');
     }
 });
-
-
-/*
-app.post('/atualizar_noticia/:id', upload.single("image"), async (req, res) => {
-    try {    
-        const postId = req.params.id;
-        const post = await Post.findByPk(postId);
-        if (!post) {
-            return res.status(404).send('Notícia não encontrada');
-        }
-
-        //req.file é o que recebe a imagem
-        const { publicador, tituloNot, subtitulo, datapubli, textoNot } = req.body;
-        post.publicador = publicador;
-        post.tituloNot = tituloNot;
-        post.subtitulo = subtitulo;
-        post.datapubli = datapubli;
-        post.textoNot = textoNot;
-        
-        // Salve as alterações no banco de dados
-        await post.save();
-
-        res.redirect('/noticias');
-    } catch (error) {
-        console.error('Erro ao atualizar notícia:', error);
-        res.status(500).send('Erro interno do servidor');
-    }
-});
-*/
-
-
-//////////////////////////////// TESTES///////////////////////
-app.get('/nnoticias', (req, res) => {
-    Post.findAll({ order: [['id', 'desc']] }).then(function (posts) {
-        let lastCreatedAt = null; // Inicializa lastCreatedAt
-
-        // Adiciona lastCreatedAt como uma propriedade a cada post
-        const postsWithDate = posts.map(post => {
-            const postWithDate = {
-                ...post.toJSON(),
-                isNewDate: post.createdAt !== lastCreatedAt
-            };
-
-            lastCreatedAt = post.createdAt; // Atualiza lastCreatedAt
-            return postWithDate;
-        });
-
-        res.render('noticias', { posts: postsWithDate });
-    });
-});
-
-
-
-app.get('/cad', (req, res) => {
-    res.render('testebanco')
-})
-app.post('/add', (req, res) => {
-    Banco.create({
-        titulo: req.body.titulo,
-        conteudo: req.body.conteudo
-    }).then(() => {
-        //res.redirect('testebanco')
-        res.send("Sucesso")
-    }).catch((erro) => {
-        res.send("Erro: " + erro)
-    })
-})
-app.get('/', (req, res) => {
-    res.render("ArquivoTest")
-})
-app.post('/upload', upload.single("file"), (req, res) => {
-    res.send("Recebido!")
-})
-
-app.get('/BANCOTESTE', (req, res) => {
-    res.render('TesteJson')
-})
-
-
-
-
-
-app.use('admin', admin)
-
-
 
 
 
